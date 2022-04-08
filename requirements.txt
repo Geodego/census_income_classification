@@ -2,4 +2,4 @@ numpy
 scikit-learn
 pytest
 dvc
-dvc-s3
+dvc[s3]
