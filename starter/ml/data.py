@@ -1,5 +1,6 @@
 import os
-from pathlib import Path
+import pathlib
+from pathlib import Path, PurePath
 import numpy as np
 import pandas as pd
 from sklearn.preprocessing import LabelBinarizer, OneHotEncoder
@@ -73,18 +74,31 @@ def process_data(
     return X, y, encoder, lb
 
 
+def get_path_root() -> pathlib.PosixPath:
+    """
+    :return:
+    absolut path to project directory "census_income_classification"
+    """
+    current_path = Path(os.path.realpath(__file__)).resolve()
+    path = current_path
+    while path.name != 'census_income_classification':
+        path = path.parent
+    return path
+
+
 def get_raw_data():
     """
     Get the raw data as a DataFrame
     :return:
     pd.DataFrame containing raw data as read from the csv file
     """
-    project_dir = Path('__file__').resolve().parents[2]
-    raw_path = os.path.join(project_dir, "data/census.csv")
+    project_dir = get_path_root()
+    raw_path = PurePath.joinpath(project_dir, "data/census.csv")
     raw_data = pd.read_csv(raw_path)
     return raw_data
 
 
 if __name__ == '__main__':
+    get_path_root()
     df = get_raw_data()
     print(df.head())
