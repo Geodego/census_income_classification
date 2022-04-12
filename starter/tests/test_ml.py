@@ -1,5 +1,5 @@
 import pytest
-from starter.ml.data import get_raw_data, get_path_root
+from ..ml.data import get_raw_data, get_path_root
 
 
 @pytest.fixture(scope='module')
@@ -24,6 +24,5 @@ def test_get_raw_data(raw_data):
     """
     Test if the raw data we get are as expected
     """
-    col_names = ['age', 'workclass', 'education']  # names that we expect to find in column headers
     assert not raw_data.empty
     assert len(raw_data.columns) == 15
