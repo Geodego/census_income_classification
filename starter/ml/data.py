@@ -1,9 +1,12 @@
+import os
+from pathlib import Path
 import numpy as np
+import pandas as pd
 from sklearn.preprocessing import LabelBinarizer, OneHotEncoder
 
 
 def process_data(
-    X, categorical_features=[], label=None, training=True, encoder=None, lb=None
+        X, categorical_features=[], label=None, training=True, encoder=None, lb=None
 ):
     """ Process the data used in the machine learning pipeline.
 
@@ -68,3 +71,20 @@ def process_data(
 
     X = np.concatenate([X_continuous, X_categorical], axis=1)
     return X, y, encoder, lb
+
+
+def get_raw_data():
+    """
+    Get the raw data as a DataFrame
+    :return:
+    pd.DataFrame containing raw data as read from the csv file
+    """
+    project_dir = Path('__file__').resolve().parents[2]
+    raw_path = os.path.join(project_dir, "data/census.csv")
+    raw_data = pd.read_csv(raw_path)
+    return raw_data
+
+
+if __name__ == '__main__':
+    df = get_raw_data()
+    print(df.head())
