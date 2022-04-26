@@ -4,6 +4,7 @@ from pathlib import Path, PurePath
 import numpy as np
 import pandas as pd
 from sklearn.preprocessing import LabelBinarizer, OneHotEncoder
+import csv
 
 
 def process_data(
@@ -86,19 +87,44 @@ def get_path_root() -> pathlib.PosixPath:
     return path
 
 
+def get_path_file(file_local_path):
+    """
+    Return the full path of a file given its local path
+    :param file_local_path: local path of the file in the project (ex: "data/census.csv")
+    """
+    project_dir = get_path_root()
+    raw_path = PurePath.joinpath(project_dir, file_local_path)
+    return raw_path
+
+
 def get_raw_data():
     """
     Get the raw data as a DataFrame
     :return:
     pd.DataFrame containing raw data as read from the csv file
     """
-    project_dir = get_path_root()
-    raw_path = PurePath.joinpath(project_dir, "data/census.csv")
+    raw_path = get_path_file("data/census.csv")
     raw_data = pd.read_csv(raw_path)
     return raw_data
 
 
+def save_clean_data():
+    """
+    Remove white spaces from "census.csv" and save data processed as such to "census_clean.csv".
+    """
+    raw_path = get_path_file("data/census.csv")
+    clean_path = get_path_file("data/census_clean.csv")
+    # todo: finish here
+    with open(raw_path, 'r') as f_raw, open(clean_path, 'w') as f_clean:
+        reader = csv.reader(f_raw, skipinitialspace=False, delimiter=',', quoting=csv.QUOTE_NONE)
+        writer = csv.writer(f_clean)
+        for row in reader:
+            clean_row = [item.strip() for item in row]
+            writer.writerow(clean_row)
+
+
 if __name__ == '__main__':
+    save_clean_data()
     get_path_root()
     df = get_raw_data()
     print(df.head())
