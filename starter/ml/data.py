@@ -114,7 +114,6 @@ def save_clean_data():
     """
     raw_path = get_path_file("data/census.csv")
     clean_path = get_path_file("data/census_clean.csv")
-    # todo: finish here
     with open(raw_path, 'r') as f_raw, open(clean_path, 'w') as f_clean:
         reader = csv.reader(f_raw, skipinitialspace=False, delimiter=',', quoting=csv.QUOTE_NONE)
         writer = csv.writer(f_clean)
