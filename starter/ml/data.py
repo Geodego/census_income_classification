@@ -1,3 +1,11 @@
+"""
+Methods related to data manipulation.
+This is a modification of the file provided in the original Udacity repository.
+
+author: Geoffroy de Gournay
+date: April 8, 2022
+"""
+import yaml
 import os
 import pathlib
 from pathlib import Path, PurePath
@@ -108,6 +116,17 @@ def get_raw_data():
     return raw_data
 
 
+def get_clean_data():
+    """
+    Get the pre-processed data as a DataFrame
+    :return:
+    pd.DataFrame containing pre-processed data as read from the csv file
+    """
+    raw_path = get_path_file("data/census_clean.csv")
+    raw_data = pd.read_csv(raw_path)
+    return raw_data
+
+
 def save_clean_data():
     """
     Remove white spaces from "census.csv" and save data processed as such to "census_clean.csv".
@@ -120,6 +139,21 @@ def save_clean_data():
         for row in reader:
             clean_row = [item.strip() for item in row]
             writer.writerow(clean_row)
+
+
+def save_hyperparameters(params: dict):
+    params = {'name': 'MLP hyper parameters', 'parameters': params}
+    file_name = get_path_file('model/hyperparams.yml')
+    if file_name.is_file():
+        os.remove(file_name)  # if the file already exists, delete it
+    with open(file_name, 'w') as outfile:
+        yaml.dump(params, outfile, default_flow_style=False)
+
+
+def get_hyperparameters():
+    file_name = get_path_file('model/hyperparams.yml')
+    params = yaml.load(file_name)
+    return params['parameters']
 
 
 if __name__ == '__main__':
