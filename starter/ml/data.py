@@ -7,16 +7,17 @@ date: April 8, 2022
 """
 import yaml
 import os
+import csv
 import pathlib
 from pathlib import Path, PurePath
 import numpy as np
 import pandas as pd
-from sklearn.preprocessing import LabelBinarizer, OneHotEncoder
-import csv
+from sklearn.preprocessing import LabelBinarizer, OneHotEncoder, StandardScaler
+from sklearn.model_selection import train_test_split
 
 
 def process_data(
-        X, categorical_features=[], label=None, training=True, encoder=None, lb=None
+        X, categorical_features=[], label=None, training=True, encoder=None, lb=None, scaler=None
 ):
     """ Process the data used in the machine learning pipeline.
 
@@ -42,6 +43,8 @@ def process_data(
         Trained sklearn OneHotEncoder, only used if training=False.
     lb : sklearn.preprocessing._label.LabelBinarizer
         Trained sklearn LabelBinarizer, only used if training=False.
+    scaler : sklearn.preprocessing.StandardScaler
+        Trained sklearn scaler, only used if training=False
 
     Returns
     -------
@@ -54,6 +57,9 @@ def process_data(
         in.
     lb : sklearn.preprocessing._label.LabelBinarizer
         Trained LabelBinarizer if training is True, otherwise returns the binarizer
+        passed in.
+    scaler : sklearn.preprocessing.StandardScaler
+        Trained sklearn scalerif training is True, otherwise returns the scaler
         passed in.
     """
 
@@ -80,7 +86,14 @@ def process_data(
             pass
 
     X = np.concatenate([X_continuous, X_categorical], axis=1)
-    return X, y, encoder, lb
+
+    # we're using neural networks so we need to scale the data
+    if training is True:
+        scaler = StandardScaler()
+        X = scaler.fit_transform(X)
+    else:
+        X = scaler.transform(X)
+    return X, y, encoder, lb, scaler
 
 
 def get_path_root() -> pathlib.PosixPath:
@@ -141,9 +154,9 @@ def save_clean_data():
             writer.writerow(clean_row)
 
 
-def save_hyperparameters(params: dict):
-    params = {'name': 'MLP hyper parameters', 'parameters': params}
-    file_name = get_path_file('model/hyperparams.yml')
+def save_hyperparameters(params: dict, random_state):
+    params = {'name': 'MLP hyper parameters', 'parameters': params, 'random_state': random_state}
+    file_name = get_path_file('parameters/hyperparams.yml')
     if file_name.is_file():
         os.remove(file_name)  # if the file already exists, delete it
     with open(file_name, 'w') as outfile:
@@ -151,13 +164,57 @@ def save_hyperparameters(params: dict):
 
 
 def get_hyperparameters():
-    file_name = get_path_file('model/hyperparams.yml')
-    params = yaml.load(file_name)
-    return params['parameters']
+    file_name = get_path_file('parameters/hyperparams.yml')
+    with open(file_name, "r") as stream:
+        params = yaml.safe_load(stream)
+    return params
+
+
+def get_cat_features() -> list:
+    file_name = get_path_file('parameters/cat_features.yml')
+    with open(file_name, "r") as stream:
+        features = yaml.safe_load(stream)['features']
+    return features
+
+
+def get_processed_test_data(encoder, lb, scaler, data=None):
+    if data is None:
+        data = get_clean_data()
+
+    random_state = get_hyperparameters()['random_state']
+    _, test = train_test_split(data, test_size=0.20, random_state=random_state)
+    cat_features = get_cat_features()
+    x_test, y_test, _, _, _ = process_data(test, categorical_features=cat_features, label="salary",
+                                           training=False, encoder=encoder, lb=lb, scaler=scaler)
+    return x_test, y_test
+
+
+def get_data_slices(selected_feature: str, encoder: OneHotEncoder, lb: LabelBinarizer, scaler: StandardScaler) -> dict:
+    """
+    Return slices of data corresponding to the different possible values that can take the categorical variable
+    selected_feature
+    :param selected_feature: categorical feature used for slicing
+    :param encoder: sklearn one hot encoder
+    :param lb:  sklearn label binarizer
+    :param scaler: sklearn scaler
+    :return:
+    dictionary which keys are the possible values that can take selected_feature. The values of that dictionary are
+    dictionaries {'x': features, 'y': labels} for the slice of the data corresponding to selected_feature taking the
+    value in the key of the dictionary.
+    """
+
+    data = get_clean_data()
+    random_state = get_hyperparameters()['random_state']
+    _, test = train_test_split(data, test_size=0.20, random_state=random_state)
+    grouped = test.groupby(selected_feature)
+    cat_features = get_cat_features()
+    output = {}
+    for value, sliced in grouped:
+        x_sliced, y_sliced, _, _, _ = process_data(sliced, categorical_features=cat_features, label="salary",
+                                                   training=False, encoder=encoder, lb=lb, scaler=scaler)
+        output[value] = {'x': x_sliced, 'y': y_sliced}
+    return output
 
 
 if __name__ == '__main__':
-    save_clean_data()
-    get_path_root()
-    df = get_raw_data()
-    print(df.head())
+    get_data_slices('education')
