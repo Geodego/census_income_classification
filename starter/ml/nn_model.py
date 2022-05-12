@@ -4,13 +4,13 @@ Implementation of a feed-forward network (multi-layer perceptron, or mlp).
 author: Geoffroy de Gournay
 date: April 27, 2022
 """
+
 import numpy as np
 import torch
 import torch.nn as nn
 from torch.utils.data import Dataset, DataLoader
 from .data import get_path_file, get_hyperparameters
 from pickle import dump, load
-from sklearn.preprocessing import LabelBinarizer, OneHotEncoder, StandardScaler
 
 
 class Mlp(nn.Module):
@@ -35,7 +35,8 @@ class Mlp(nn.Module):
     learning_rate : float
         Learning rate for the optimizer.
     hyper_tuning: bool
-        Indicates if the model is used for hyperparameters tuning
+        Indicates if the model is used for hyperparameters tuning. In this case, the model doesn't print the losses
+        during training
     use_saved_hyper_params: bool
         Indicates if hyperparameters need to be loaded from yaml file
     """
