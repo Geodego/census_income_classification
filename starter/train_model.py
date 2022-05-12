@@ -1,31 +1,37 @@
-# Script to trained_and_save_model machine learning model.
+"""
+Script to train_and_save_model machine learning model and to perform model evaluation on data slices.
+
+author: Geoffroy de Gournay
+date: April 27, 2022
+"""
+
 import pandas as pd
 import numpy as np
-from typing import Union
+from typing import Tuple
 from sklearn.model_selection import train_test_split
-
-# Add the necessary imports for the starter code.
 from .ml.data import process_data, get_clean_data, get_cat_features, get_data_slices, get_processed_test_data
 from .ml.model import train_model, compute_model_metrics, inference
 from .ml.nn_model import Mlp
 
 
-def trained_and_save_model(tuning=True, random_state=42, use_saved_model=False):
+def train_and_save_model(tuning: bool = True, random_state: int = 42,
+                         use_saved_model: bool = False) -> Tuple[float, float, float]:
     """
-    Train and save a model. The tols used for processing the data is saved as well, both the data processing tools
+    Train and save a model. The tools used for processing the data is saved as well, both the data processing tools
     and the model
     are saved in the 'model' folder.
     :param tuning: Set to true if hyperparameters are to be optimised. If false hyperparameters are loaded from a
     yaml file.
     :param random_state: Controls the shuffling applied to the data before applying the split.
     Pass an int for reproducible output.
-    :return:
+    :param use_saved_model: If True, starts from the model already saved.
+    :return: tuple (precision, recall, F1)
     """
 
-    # Add code to load in the data.
+    # load in the data.
     data = get_clean_data()
 
-    # Optional enhancement, use K-fold cross validation instead of a trained_and_save_model-test split.
+    # Optional enhancement, K-fold cross validation instead of a train_and_save_model-test split could be used.
     train, test = train_test_split(data, test_size=0.20, random_state=random_state)
     cat_features = get_cat_features()
     X_train, y_train, encoder, lb, scaler = process_data(
