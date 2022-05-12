@@ -1,3 +1,10 @@
+"""
+Model training and performance evaluation functions. Include also methods for hyperparameters search.
+
+author: Geoffroy de Gournay
+date: April 27, 2022
+"""
+
 import numpy as np
 from sklearn.metrics import fbeta_score, precision_score, recall_score
 import optuna
@@ -132,7 +139,7 @@ def compute_model_metrics(y: np.array, preds: np.array) -> Tuple[float, float, f
     Validates the trained machine learning model using precision, recall, and F1.
     :param y: Known labels, binarized.
     :param preds: Predicted labels, binarized.
-    :return: tuple (precision, recall, F1
+    :return: tuple (precision, recall, F1)
     """
     fbeta = fbeta_score(y, preds, beta=1, zero_division=1)
     precision = precision_score(y, preds, zero_division=1)
