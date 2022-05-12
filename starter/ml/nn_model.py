@@ -8,7 +8,9 @@ import numpy as np
 import torch
 import torch.nn as nn
 from torch.utils.data import Dataset, DataLoader
-from .data import get_path_file
+from .data import get_path_file, get_hyperparameters
+from pickle import dump, load
+from sklearn.preprocessing import LabelBinarizer, OneHotEncoder, StandardScaler
 
 
 class Mlp(nn.Module):
@@ -34,33 +36,48 @@ class Mlp(nn.Module):
         Learning rate for the optimizer.
     hyper_tuning: bool
         Indicates if the model is used for hyperparameters tuning
+    use_saved_hyper_params: bool
+        Indicates if hyperparameters need to be loaded from yaml file
     """
 
-    def __init__(self, n_layers: int,
-                 hidden_dim: int,
-                 n_classes,
+    def __init__(self, n_layers: int = 2,
+                 hidden_dim: int = 50,
+                 n_classes: int = 2,
                  input_dim: int = 108,
                  batch_size: int = 1028,
                  epochs: int = 200,
                  learning_rate: float = 0.001,
                  dropout_rate: float = 0.5,
-                 hyper_tuning: bool = False
+                 hyper_tuning: bool = False,
+                 use_saved_hyper_params: bool = False
                  ):
         super(Mlp, self).__init__()
+        self.loss_fn = nn.CrossEntropyLoss()  # combines nn.LogSoftmax and nn.NLLLoss
+        self.device = "cuda" if torch.cuda.is_available() else "cpu"
+        self.epochs = epochs
+        self.hyper_tuning = hyper_tuning
+        if use_saved_hyper_params:
+            params = get_hyperparameters()['parameters']
+            self.batch_size = params['batch_size']
+            self.dropout_rate = params['dropout_rate']
+            hidden_dim = params['hidden_dim']
+            self.learning_rate = params['learning_rate']
+            n_layers = params['n_layers']
+        else:
+            self.batch_size = batch_size
+            self.dropout_rate = dropout_rate
+            self.learning_rate = learning_rate
         self.network = build_mlp(input_size=input_dim,
                                  output_size=n_classes,
                                  n_layers=n_layers,
                                  hidden_size=hidden_dim,
                                  dropout_rate=dropout_rate)
         self.optimizer = torch.optim.Adam(self.network.parameters())
-        self.loss_fn = nn.CrossEntropyLoss()  # combines nn.LogSoftmax and nn.NLLLoss
-        self.batch_size = batch_size
-        self.device = "cuda" if torch.cuda.is_available() else "cpu"
         self.network.to(self.device)
-        self.epochs = epochs
-        self.learning_rate = learning_rate
-        self.dropout_rate = dropout_rate
-        self.hyper_tuning = hyper_tuning
+        # Calibrated preprocessing tools that were used for training an that are necessary for inference
+        self.encoder = None  # sklearn.preprocessing.OneHotEncoder
+        self.lb = None  # sklearn.preprocessing.LabelBinarizer
+        self.scaler = None  # sklearn.preprocessing.StandardScaler
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         """
@@ -125,13 +142,31 @@ class Mlp(nn.Module):
         y_pred = logits.argmax(dim=1).cpu().numpy().reshape(-1)
         return y_pred
 
-    def save_model(self):
+    def save_model(self, encoder, lb, scaler):
+        """
+        Save the model and the preprocessing tools used to calibrate the model
+        :param encoder:
+        :param lb:
+        :param scaler:
+        :return: (OneHotEncoder, LabelBinarizer, StandardScaler)
+        """
         model_path = get_path_file('model/mlp.pt')
         torch.save(self.state_dict(), model_path)
+        # save the tools used for pre-processing data
+        dump(encoder, open('model/encoder.pkl', 'wb'))
+        dump(lb, open('model/lb.pkl', 'wb'))
+        dump(scaler, open('model/scaler.pkl', 'wb'))
 
     def load_model(self):
+        """
+        load model and pre-processing tools needed for inference
+        :return:
+        """
         model_path = get_path_file('model/mlp.pt')
         self.load_state_dict(torch.load(model_path))
+        self.encoder = load(open('model/encoder.pkl', 'rb'))
+        self.lb = load(open('model/lb.pkl', 'rb'))
+        self.scaler = load(open('model/scaler.pkl', 'rb'))
 
 
 def build_mlp(
@@ -153,7 +188,7 @@ def build_mlp(
     # seequence of  affine operations: y = Wx + b followed by RelU activation.
     layer_list = [nn.Linear(input_size, hidden_size), nn.ReLU()]
 
-    for layer in range(n_layers - 1):
+    for layer in range(n_layers):
         layer_list.append(nn.Linear(hidden_size, hidden_size))
         layer_list.append(nn.Dropout(p=dropout_rate))
         layer_list.append(nn.ReLU())
