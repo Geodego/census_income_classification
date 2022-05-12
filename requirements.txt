@@ -6,6 +6,6 @@ torch ~= 1.4.0
 optuna ~= 2.10.0
 dvc ~= 1.10.1
 dvc[s3] ~= 1.10.1
-yaml ~= 0.2.5
+pyyaml ~= 0.2.5
 
 
