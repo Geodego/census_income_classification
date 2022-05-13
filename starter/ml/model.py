@@ -36,17 +36,19 @@ def train_model(x_train: np.array, y_train: np.array, tuning: bool = True, rando
         x_train, y_train, test_size=0.2, random_state=42)
 
     if tuning:
-        # Use optuna to estimate the best hyper parameters
+        # Use optuna to estimate the best hyper-parameters
         print('Tuning hyper parameters...')
         params = hyperparameters_tuning(x_train2, y_train2, x_val, y_val, random_state)
     else:
-        # read the hyper parameters saved
+        # read the hyper-parameters saved
         params = get_hyperparameters()['parameters']
     print('Hyper parameters selected for training:')
     print(params)
 
     print('training the model...')
-    model = training_session(x_train, y_train, n_classes, **params, epochs=300, hyper_tuning=False,
+    # Now that we've estimated the optimal value for hyper-parameters, we can train the model
+    # on all the training data available.
+    model = training_session(x_train, y_train, n_classes, **params, epochs=1000, hyper_tuning=False,
                              use_saved_model=use_saved_model)
     return model
 
@@ -115,7 +117,7 @@ def objective(trial: optuna.Trial, x_train: np.array, y_train: np.array, x_val: 
         'n_layers': trial.suggest_categorical('n_layers', [1, 2, 3, 4, 5]),
         'dropout_rate': trial.suggest_categorical('dropout_rate', [0.3, 0.4, 0.5, 0.6, 0.7])
     }
-    model = training_session(x_train, y_train, **params, epochs=100, n_classes=2, hyper_tuning=True)
+    model = training_session(x_train, y_train, **params, epochs=150, n_classes=2, hyper_tuning=True)
     preds = model.predict(x_val)
     f1 = fbeta_score(y_val, preds, beta=1, zero_division=1)
     return f1
