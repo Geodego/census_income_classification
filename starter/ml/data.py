@@ -22,11 +22,8 @@ def process_data(
     """ Process the data used in the machine learning pipeline.
 
     Processes the data using one hot encoding for the categorical features and a
-    label binarizer for the labels. This can be used in either training or
-    inference/validation.
-
-    Note: depending on the type of model used, you may want to add in functionality that
-    scales the continuous data.
+    label binarizer for the labels. As we use a neural network we scale the continuous data.
+    This can be used in either training or inference/validation.
 
     Inputs
     ------
@@ -70,15 +67,19 @@ def process_data(
         y = np.array([])
 
     X_categorical = X[categorical_features].values
-    X_continuous = X.drop(*[categorical_features], axis=1)
+    X_continuous = X.drop(*[categorical_features], axis=1).values
 
     if training is True:
         encoder = OneHotEncoder(sparse=False, handle_unknown="ignore")
         lb = LabelBinarizer()
         X_categorical = encoder.fit_transform(X_categorical)
         y = lb.fit_transform(y.values).ravel()
+        # we're using neural networks so we need to scale the data
+        scaler = StandardScaler()
+        X_continuous = scaler.fit_transform(X_continuous)
     else:
         X_categorical = encoder.transform(X_categorical)
+        X_continuous = scaler.transform(X_continuous)
         try:
             y = lb.transform(y.values).ravel()
         # Catch the case where y is None because we're doing inference.
@@ -87,12 +88,6 @@ def process_data(
 
     X = np.concatenate([X_continuous, X_categorical], axis=1)
 
-    # we're using neural networks so we need to scale the data
-    if training is True:
-        scaler = StandardScaler()
-        X = scaler.fit_transform(X)
-    else:
-        X = scaler.transform(X)
     return X, y, encoder, lb, scaler
 
 
