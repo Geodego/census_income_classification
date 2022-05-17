@@ -1,14 +1,4 @@
-import pytest
-from ..ml.data import get_raw_data, get_path_root, get_hyperparameters, get_cat_features
-
-
-@pytest.fixture(scope='module')
-def raw_data():
-    """
-    Get raw data and return a pd.DataFrame
-    """
-    df = get_raw_data()
-    return df
+from ..ml.data import get_path_root, get_hyperparameters, get_cat_features
 
 
 def test_get_path_root():
