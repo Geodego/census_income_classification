@@ -158,16 +158,20 @@ class Mlp(nn.Module):
         dump(lb, open('model/lb.pkl', 'wb'))
         dump(scaler, open('model/scaler.pkl', 'wb'))
 
-    def load_model(self):
+    def load_model(self, root=''):
         """
         load model and pre-processing tools needed for inference
         :return:
         """
         model_path = get_path_file('model/mlp.pt')
         self.load_state_dict(torch.load(model_path))
-        self.encoder = load(open('model/encoder.pkl', 'rb'))
-        self.lb = load(open('model/lb.pkl', 'rb'))
-        self.scaler = load(open('model/scaler.pkl', 'rb'))
+        # get the paths to the relevant files
+        encoder_path = get_path_file('model/encoder.pkl')
+        lb_path = get_path_file('model/lb.pkl')
+        scaler_path = get_path_file('model/scaler.pkl')
+        self.encoder = load(open(encoder_path, 'rb'))
+        self.lb = load(open(lb_path, 'rb'))
+        self.scaler = load(open(scaler_path, 'rb'))
 
 
 def build_mlp(
