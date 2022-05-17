@@ -165,10 +165,19 @@ def get_hyperparameters():
     return params
 
 
-def get_cat_features() -> list:
+def get_cat_features(for_api=False) -> list:
+    """
+    Get the categorical features. When using the api, the hyphens are replaced by underscores
+    :param for_api:
+    :return:
+    """
     file_name = get_path_file('parameters/cat_features.yml')
     with open(file_name, "r") as stream:
         features = yaml.safe_load(stream)['features']
+    # if used by api hyphens are replaced by underscore
+    if for_api:
+        for i, item in enumerate(features):
+            features[i] = item.replace('-', '_')
     return features
 
 
