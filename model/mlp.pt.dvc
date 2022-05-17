@@ -1,0 +1,4 @@
+outs:
+- md5: a37ecdc6fed3f020e3c7cd1cdd412fac
+  size: 23652
+  path: mlp.pt
