@@ -1,0 +1,2 @@
+# Files not needed for running app with Heroku. This is for reducing the slug size
+*.png
