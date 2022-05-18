@@ -1,2 +1,1 @@
-# used by Heroku to specify which python version needs to be used for deployment
 python-3.8.13
