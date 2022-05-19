@@ -27,5 +27,10 @@ the One Hot Encoder and the  scaler used for training data are used so that we c
 - The values obtained on test data are: precision: 0.78, recall: 0.49, F1: 0.60.
 
 ## Ethical Considerations
+This data is collected from a survey, there could be bias coming from how the survey was set-up or on how people 
+properly answer to the different questions corresponding to the features used for training the model.
 
 ## Caveats and Recommendations
+More work should be done on hyper-parameter tuning to improve the performance of the model. This project is about CI/CD,
+so more emphasis was put on building an architecture using GitHub Action, DVC+S3, FastAPI and Heroku than in 
+fine-tuning the model.
