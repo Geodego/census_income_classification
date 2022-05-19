@@ -35,7 +35,7 @@ def run_sanity_check(test_dir):
     SANITY_TEST_PASSING = True
     WARNING_COUNT = 1
 
-    ## GET()
+    # GET()
     TEST_FOR_GET_METHOD_RESPONSE_CODE = False
     TEST_FOR_GET_METHOD_RESPONSE_BODY = False
     if not test_functions_for_get:
@@ -64,7 +64,7 @@ def run_sanity_check(test_dir):
             WARNING_COUNT += 1
             print(FAIL_COLOR + "Your test case for GET() does not seem to be testing the CONTENTS of the response.\n")
 
-    ## POST()
+    # POST()
     TEST_FOR_POST_METHOD_RESPONSE_CODE = False
     TEST_FOR_POST_METHOD_RESPONSE_BODY = False
     COUNT_POST_METHOD_TEST_FOR_INFERENCE_RESULT = 0
