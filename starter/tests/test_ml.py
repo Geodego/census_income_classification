@@ -14,7 +14,7 @@ def test_build_mlp(n_layers):
     output_size = 2
     hidden_size = 5
     model = build_mlp(input_size, output_size, n_layers, hidden_size, dropout_rate=0.5)
-    assert len(model) == 3 * (n_layers+1)
+    assert len(model) == 3 * (n_layers + 1)
 
     assert type(model[0]) is nn.Linear
     assert model[0].in_features == input_size
@@ -28,8 +28,8 @@ def test_mlp_inference():
     """
     Test if the model returns expected output when used for inference
     """
-    model = Mlp(n_layers=2, hidden_dim=5,n_classes=2, input_dim=10)
-    n_examples =300
+    model = Mlp(n_layers=2, hidden_dim=5, n_classes=2, input_dim=10)
+    n_examples = 300
     data = np.random.rand(n_examples, 10)
     output = model.predict(data)
     assert output.shape[0] == n_examples
