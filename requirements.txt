@@ -2,8 +2,8 @@ numpy ~= 1.22.3
 pandas ~= 1.4.2
 scikit-learn ~= 1.0.2
 pytest ~= 7.1.1
-# torch ~= 1.4.0+cpu
-# we use pytorch cpu only to reduce the slug size in Heroku
+# we use pytorch cpu only version to reduce the slug size in Heroku
+torch ~= 1.4.0+cpu
 #https://download.pytorch.org/whl/cpu/torch-1.4.0%2Bcpu-cp37-cp37m-linux_x86_64.whl
 optuna ~= 2.10.0
 dvc ~= 1.10.1
