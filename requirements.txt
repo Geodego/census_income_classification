@@ -5,7 +5,6 @@ pytest ~= 7.1.1
 # we use pytorch cpu only version to reduce the slug size in Heroku
 -f https://download.pytorch.org/whl/torch_stable.html
 torch==1.4.0+cpu
-#https://download.pytorch.org/whl/cpu/torch-1.4.0%2Bcpu-cp37-cp37m-linux_x86_64.whl
 optuna ~= 2.10.0
 dvc ~= 1.10.1
 dvc[s3] ~= 1.10.1
