@@ -1,5 +1,5 @@
 import pytest
-from ..ml.data import get_raw_data, get_clean_data, get_processed_test_data, get_cat_features, process_data
+from ..ml.data import get_raw_data, get_clean_data, get_cat_features, process_data
 from ..ml.model import get_trained_mlp
 
 
@@ -31,8 +31,8 @@ def get_examples():
     df = get_clean_data()
     cat_features = get_cat_features()
     x, _, _, _, _ = process_data(df, categorical_features=cat_features, label="salary",
-                                           training=False, encoder=model.encoder, lb=model.lb, scaler=model.scaler)
-    predicted = model.predict(x) # this is mainly to get a properly shaped dataframe
+                                 training=False, encoder=model.encoder, lb=model.lb, scaler=model.scaler)
+    predicted = model.predict(x)  # this is mainly to get a properly shaped dataframe
     positive = df[predicted == 1].iloc[0].to_dict()
     negative = df[predicted == 0].iloc[0].to_dict()
     return positive, negative
