@@ -1,6 +1,10 @@
 [![Python 3.8](https://img.shields.io/badge/python-3.8-blue.svg)](https://www.python.org/downloads/release/python-380/)
+[![Pytorch 1.4](https://img.shields.io/badge/pytorch-1.4-blue.svg)](https://pytorch.org/blog/pytorch-1-dot-4-released-and-domain-libraries-updated/)
 [![dvc 2.8](https://img.shields.io/badge/dvc-2.8-blue.svg)](https://dvc.org/doc/install)
 [![fastapi 0.63](https://img.shields.io/badge/fastapi-0.63-blue.svg)](https://fastapi.tiangolo.com/release-notes/#0630)
+[![uvicorn 0.17.6](https://img.shields.io/badge/uvicorn-0.17.6-blue.svg)](https://pypi.org/project/uvicorn/0.17.6/)
+[![HEROKU 7.60.1](https://img.shields.io/badge/heroku-7.60.1-blue.svg)](https://www.heroku.com/)
+
 # Census Income Classification
 Classification model on Census Bureau data
 
@@ -27,15 +31,22 @@ file provided in the root of the repository and activate it:
 > pip install -r requirements.txt
 ```
 
-## code organisation
+## Code organisation
 
 ## Data and Model Versioning
 We use DVC to store and track both our data and models. We use AWS s3 for storage. The steps to follow for AWS and DVC 
 set up are:
-- In the CLI environment install the [AWS CLI tool](https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-install.html)
-- To use your new S3 bucket from the AWS CLI you will need to create an IAM user with the appropriate permissions. 
+- In the CLI environment we install the [AWS CLI tool](https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-install.html)
+- To use our new S3 bucket from the AWS CLI we will need to create an IAM user with the appropriate permissions. 
 The full instructions can be found [here](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_users_create.html#id_users_create_console).
-
+- To save file and track it with dvc we follow steps as shown in the example below:
+```bash
+> dvc add model/scaler.pkl
+> git add model/scaler.pkl.dvc .gitignore
+> git commit -m "Initial commit of tracked scaler.pkl"
+> dvc push
+> git push
+```
 ## API Creation
 
 - We create a RESTful API using FastAPI, using type hinting and a Pydantic model to ingest the body from POST. 
@@ -43,6 +54,12 @@ This implement:
   - GET on the root giving a welcome message.
   - POST that does model inference.
 - Unit tests to test the API.
+- To launch the API use the following command (the `reload` flag allows to make changes to the code and have them 
+instantly deployed without restarting uvicorn):
+```bash
+> uvicorn main:app --reload
+```
+- Once the API is deployed we can get its docs at the following url: [http//127.0.0.1:8000/docs](http//127.0.0.1:8000/docs)
 
 ## CI/CD
 ### CI
@@ -63,15 +80,31 @@ Connect AWS to GitHub actions:
   - We use the IP ```0.0.0.0``` to tell the server to listen on every open network interface. 
   - Heroku dynamically assigns the port to the ```PORT``` variable: we set the port CLI option to PORT with default 
   value 5000. Doing so we tell uvicorn which port to use.
+- Heroku app creation:
+  - We create a new app:
+  ```bash
+  > heroku create geof-census-app --buildpack heroku/python
+  ```
+  - add a remote to our local repository:
+  ```bash
+  > heroku git:remote -a geof-census-app
+  ```
+  - To be sure Heroku deploys with the proper python version we need to add a `runtime.txt` file at the root 
+  of the directory
+  - then we can deploy from our GitHub repository:
+  ```bash
+  > git push heroku main
+  ```
 - Pulling files from DVC with Heroku: 
   - We need to give Heroku the ability to pull in data from DVC upon app start up. We will install 
     a [buildpack](https://elements.heroku.com/buildpacks/heroku/heroku-buildpack-apt) that allows the installation of 
     apt-files and then define the Aptfile that contains a path to DVC:
   - in the CLI we run:
-
-    `heroku buildpacks:add --index 1 heroku-community/apt`
+    ```bash
+    > heroku buildpacks:add --index 1 heroku-community/apt
+    ```
   - Then in the root project folder we create a file called `Aptfile` that specifies the release of DVC we want 
-  installed, e.g. https://github.com/iterative/dvc/releases/download/2.0.18/dvc_2.0.18_amd64.deb
+  installed, e.g. https://github.com/iterative/dvc/releases/download/1.10.1/dvc_1.10.1_amd64.deb
   - Finally, we need to add the following code block to main.py:
   ```
   import os
@@ -82,5 +115,9 @@ Connect AWS to GitHub actions:
           exit("dvc pull failed")
       os.system("rm -r .dvc .apt/usr/lib/dvc")
   ```
-- Heroku app creation:
-  - We create a new app and have it deployed from our GitHub repository.
+- Set up access to AWS on Heroku:
+  ```bash
+  > heroku config:set AWS_ACCESS_KEY_ID=xxx AWS_SECRET_ACCESS_KEY=yyy
+  ```
+The get method of the app con be accessed at the following url: [https://geof-census-app.herokuapp.com/](https://geof-census-app.herokuapp.com/)
+
