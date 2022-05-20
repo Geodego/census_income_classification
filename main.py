@@ -89,7 +89,7 @@ async def api_greeting():
     return {"greeting": "Welcome! This API predicts income category using Census data."}
 
 
-@app.post("/predict/", response_model=Item)
+@app.post("/predict", response_model=Item)
 async def predict(predict_body: CensusItem):
     model = get_trained_mlp()
     data = pd.DataFrame([predict_body.dict()])

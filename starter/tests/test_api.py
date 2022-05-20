@@ -36,8 +36,8 @@ def test_api_get_root(client):
 @pytest.fixture(scope='class')
 def predict_request(client, positive_example, negative_example):
     requests = {}
-    requests['positive'] = client.post("/predict/", json=positive_example)
-    requests['negative'] = client.post("/predict/", json=negative_example)
+    requests['positive'] = client.post("/predict", json=positive_example)
+    requests['negative'] = client.post("/predict", json=negative_example)
     return requests
 
 
@@ -58,7 +58,7 @@ def test_api_post_positive(positive_example, client):
     where the model predicts a negative outcome.
     """
     type_ex, example = 'positive', positive_example
-    response = client.post("/predict/", json=positive_example)
+    response = client.post("/predict", json=positive_example)
     output = response.json()['predicted_salary_class']
     data = pd.DataFrame([example])
     cat_features = get_cat_features()
@@ -78,7 +78,7 @@ def test_api_post_negative(predict_request, negative_example, client):
     where the model predicts a negative outcome.
     """
     type_ex, example = 'negative', negative_example
-    response = client.post("/predict/", json=negative_example)
+    response = client.post("/predict", json=negative_example)
     output = response.json()['predicted_salary_class']
     data = pd.DataFrame([example])
     cat_features = get_cat_features()
