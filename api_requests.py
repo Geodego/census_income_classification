@@ -17,10 +17,13 @@ data = {
     "hours-per-week": 40,
     "native-country": "Cuba"
 }
-
+response1 = requests.get("https://geof-census-app.herokuapp.com/")
+print(f"status get: {response1.status_code}")
+from starter.ml.data import get_clean_data
+df = get_clean_data()
+data = df.iloc[0].to_dict()
 r = requests.post(
     url='https://geof-census-app.herokuapp.com/predict',
-    data=json.dumps(data),
-    headers={'content-type': 'application/json'}
+    json=data,
 )
 print(r.json())
