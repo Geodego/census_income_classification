@@ -100,11 +100,13 @@ async def api_greeting():
 async def predict(predict_body: CensusItem):
     model = get_trained_mlp()
     data = pd.DataFrame([predict_body.dict()])
+    print(data)
     cat_features = get_cat_features(for_api=True)
     x, _, _, _, _ = process_data(data, categorical_features=cat_features,
                                  training=False, encoder=model.encoder, lb=model.lb, scaler=model.scaler)
+    print(f'data processed shape: {x.shape}')
     predicted = inference(model, x)
-
+    print(predicted)
     # Return predicted salary class
     #output = Item(predicted_salary_class=predicted[0])
     output = {
