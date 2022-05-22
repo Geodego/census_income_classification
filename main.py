@@ -1,3 +1,9 @@
+"""
+FastAPI interface used to make inference on census data using a neural network. The app is deployed on Heroku.
+
+author: Geoffroy de Gournay
+date: Mai 15, 2022
+"""
 import pandas as pd
 
 from starter.ml.model import get_trained_mlp, inference
@@ -10,6 +16,7 @@ from pydantic import BaseModel, Field
 import os
 
 if "DYNO" in os.environ and os.path.isdir(".dvc"):
+    # This code is necessary for Heroku to use dvc
     os.system("dvc config core.no_scm true")
     if os.system("dvc pull") != 0:
         exit("dvc pull failed")
@@ -99,7 +106,10 @@ async def predict(predict_body: CensusItem):
     predicted = inference(model, x)
 
     # Return predicted salary class
-    output = Item(predicted_salary_class=predicted[0])
+    #output = Item(predicted_salary_class=predicted[0])
+    output = {
+        "predicted_salary_class": predicted[0]
+    }
     return output
 
 
