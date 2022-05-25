@@ -16,11 +16,8 @@ from pydantic import BaseModel, Field
 import os
 import logging
 
-logging.basicConfig(
-    filename='./logs/churn_library.log',
-    level=logging.INFO,
-    filemode='w',
-    format='%(name)s - %(levelname)s - %(message)s')
+logging.basicConfig(level=logging.INFO, format="%(name)s - %(levelname)s - %(message)s")
+logger = logging.getLogger()
 
 if "DYNO" in os.environ and os.path.isdir(".dvc"):
     # This code is necessary for Heroku to use dvc
@@ -107,13 +104,13 @@ async def api_greeting():
 async def predict(predict_body: CensusItem):
     model = get_trained_mlp()
     data = pd.DataFrame([predict_body.dict(by_alias=True)])
-    logging.info('Get data from body as a CensusItem object')
-    logging.info(data)
+    logger.info('Get data from body as a CensusItem object')
+    logger.info(data)
     # todo: get_cat_features need to be modified
     cat_features = get_cat_features(for_api=False)
     x, _, _, _, _ = process_data(data, categorical_features=cat_features,
                                  training=False, encoder=model.encoder, lb=model.lb, scaler=model.scaler)
-    logging.info(f'data processed shape: {x.shape}')
+    logger.info(f'data processed shape: {x.shape}')
     predicted = inference(model, x)
     logging.info(predicted)
     # Return predicted salary class
