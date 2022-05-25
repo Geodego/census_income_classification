@@ -14,6 +14,13 @@ from fastapi import FastAPI
 # BaseModel from Pydantic is used to define data objects
 from pydantic import BaseModel, Field
 import os
+import logging
+
+logging.basicConfig(
+    filename='./logs/churn_library.log',
+    level=logging.INFO,
+    filemode='w',
+    format='%(name)s - %(levelname)s - %(message)s')
 
 if "DYNO" in os.environ and os.path.isdir(".dvc"):
     # This code is necessary for Heroku to use dvc
@@ -99,16 +106,17 @@ async def api_greeting():
 @app.post("/predict", response_model=Item)
 async def predict(predict_body: CensusItem):
     model = get_trained_mlp()
-    data = pd.DataFrame([predict_body.dict()])
-    print(data)
+    data = pd.DataFrame([predict_body.dict(by_alias=True)])
+    logging.info('Get data from body as a CensusItem object')
+    logging.info(data)
     cat_features = get_cat_features(for_api=True)
     x, _, _, _, _ = process_data(data, categorical_features=cat_features,
                                  training=False, encoder=model.encoder, lb=model.lb, scaler=model.scaler)
-    print(f'data processed shape: {x.shape}')
+    logging.info(f'data processed shape: {x.shape}')
     predicted = inference(model, x)
-    print(predicted)
+    logging.info(predicted)
     # Return predicted salary class
-    #output = Item(predicted_salary_class=predicted[0])
+    # output = Item(predicted_salary_class=predicted[0])
     output = {
         "predicted_salary_class": predicted[0]
     }
