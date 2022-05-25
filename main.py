@@ -109,7 +109,8 @@ async def predict(predict_body: CensusItem):
     data = pd.DataFrame([predict_body.dict(by_alias=True)])
     logging.info('Get data from body as a CensusItem object')
     logging.info(data)
-    cat_features = get_cat_features(for_api=True)
+    # todo: get_cat_features need to be modified
+    cat_features = get_cat_features(for_api=False)
     x, _, _, _, _ = process_data(data, categorical_features=cat_features,
                                  training=False, encoder=model.encoder, lb=model.lb, scaler=model.scaler)
     logging.info(f'data processed shape: {x.shape}')
