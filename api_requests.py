@@ -1,5 +1,9 @@
 import requests
 import json
+import logging
+
+logging.basicConfig(level=logging.INFO, format="%(name)s - %(levelname)s - %(message)s")
+logger = logging.getLogger()
 
 data = {
     "age": 41,
@@ -19,8 +23,8 @@ data = {
 }
 url = 'https://geof-census-app.herokuapp.com/'
 # url = "http://127.0.0.1:8000/"
-# response1 = requests.get(url)
-# print(f"status get request: {response1.status_code}")
+response1 = requests.get(url)
+print(f"status get request: {response1.status_code}")
 
 # url='https://geof-census-app.herokuapp.com/predict'
 url = url + "predict"
