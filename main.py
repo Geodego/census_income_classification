@@ -22,6 +22,7 @@ logger = logging.getLogger()
 if "DYNO" in os.environ and os.path.isdir(".dvc"):
     # This code is necessary for Heroku to use dvc
     os.system("dvc config core.no_scm true")
+    os.system("dvc remote add -d s3remote s3://censusbucketgg")
     if os.system("dvc pull") != 0:
         exit("dvc pull failed")
     os.system("rm -r .dvc .apt/usr/lib/dvc")
