@@ -1,4 +1,5 @@
 import pytest
+import json
 import pandas as pd
 from fastapi.testclient import TestClient
 from main import CensusItem, app
@@ -78,7 +79,7 @@ def test_api_post_negative(predict_request, negative_example, client):
     where the model predicts a negative outcome.
     """
     type_ex, example = 'negative', negative_example
-    response = client.post("/predict", json=negative_example)
+    response = client.post("/predict", data=json.dumps(negative_example))
     output = response.json()['predicted_salary_class']
     data = pd.DataFrame([example])
     cat_features = get_cat_features()
