@@ -26,7 +26,9 @@ if "DYNO" in os.environ and os.path.isdir(".dvc"):
     # os.system("dvc remote add -d s3remote s3://censusbucketgg")
     pull_err = os.system("dvc pull")
     if pull_err != 0:
-        exit(f"dvc pull failed, error {pull_err}")
+        # TODO: restore code here
+        logger.warning(f"dvc pull failed, error: {pull_err}")
+        #exit(f"dvc pull failed, error {pull_err}")
     else:
         logger.info("DVC Pull worked.")
     os.system("rm -r .dvc .apt/usr/lib/dvc")
