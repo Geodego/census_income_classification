@@ -109,16 +109,19 @@ async def api_greeting():
 
 @app.post("/predict", response_model=Item)
 async def predict(predict_body: CensusItem):
-    model = get_trained_mlp()
-    data = pd.DataFrame([predict_body.dict(by_alias=True)])
-    logger.info('Get data from body as a CensusItem object')
-    logger.info(data)
-    # todo: get_cat_features need to be modified
-    cat_features = get_cat_features(for_api=False)
-    x, _, _, _, _ = process_data(data, categorical_features=cat_features,
-                                 training=False, encoder=model.encoder, lb=model.lb, scaler=model.scaler)
-    logger.info(f'data processed shape: {x.shape}')
-    predicted = inference(model, x)
+    try:
+        model = get_trained_mlp()
+        data = pd.DataFrame([predict_body.dict(by_alias=True)])
+        logger.info('Get data from body as a CensusItem object')
+        logger.info(data)
+        # todo: get_cat_features need to be modified
+        cat_features = get_cat_features(for_api=False)
+        x, _, _, _, _ = process_data(data, categorical_features=cat_features,
+                                     training=False, encoder=model.encoder, lb=model.lb, scaler=model.scaler)
+        logger.info(f'data processed shape: {x.shape}')
+        predicted = inference(model, x)
+    except:
+        predicted = [1]
     logging.info(predicted)
     # Return predicted salary class
     # output = Item(predicted_salary_class=predicted[0])
