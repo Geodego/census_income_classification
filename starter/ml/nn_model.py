@@ -9,8 +9,9 @@ import numpy as np
 import torch
 import torch.nn as nn
 from torch.utils.data import Dataset, DataLoader
-from .data import get_path_file, get_hyperparameters
+from sklearn.preprocessing import OneHotEncoder, LabelBinarizer, StandardScaler
 from pickle import dump, load
+from .data import get_path_file, get_hyperparameters
 
 
 class Mlp(nn.Module):
@@ -83,24 +84,24 @@ class Mlp(nn.Module):
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         """
         Pytorch forward method used to perform a forward pass of inputs through the network
-        :param x: features observed (shape [batch size, dim(features)])
+        :param x: processed features observed (shape [batch size, dim(processed features)])
         :return:
             output (torch.Tensor): networks predicted income class for a given observation (shape [batch size])
         """
         logits = self.network(x)
         return logits
 
-    def train_model(self, x_train: np.array, y_train: np.array):
+    def train_model(self, x_train: np.array, y_train: np.array) -> float:
         """
         Train the NN
-        :param x_train:
-        :param y_train:
-        :return:
+        :param x_train: processed training features
+        :param y_train: training labels in {0, 1}
+        :return: average loss in latest batch used for training
         """
         data_set = CensusDataset(x_train, y_train, self.device)
         train_loader = DataLoader(data_set, batch_size=self.batch_size, shuffle=True)
         self.network.train()
-
+        last_loss = 0
         for epoch in range(self.epochs):
             last_loss = 0
             running_loss = 0
@@ -134,7 +135,7 @@ class Mlp(nn.Module):
     def predict(self, x: np.array) -> np.array:
         """
         Use model for inference
-        :param x:
+        :param x: processed features values
         :return:
         """
         self.network.eval()
@@ -143,13 +144,13 @@ class Mlp(nn.Module):
         y_pred = logits.argmax(dim=1).cpu().numpy().reshape(-1)
         return y_pred
 
-    def save_model(self, encoder, lb, scaler):
+    def save_model(self, encoder: OneHotEncoder, lb: LabelBinarizer, scaler: StandardScaler):
         """
         Save the model and the preprocessing tools used to calibrate the model
-        :param encoder:
-        :param lb:
-        :param scaler:
-        :return: (OneHotEncoder, LabelBinarizer, StandardScaler)
+        :param encoder: sklearn OneHotEncoder
+        :param lb: sklearn LabelBinarizer
+        :param scaler: sklearn StandardScaler
+        :return:
         """
         model_path = get_path_file('model/mlp.pt')
         torch.save(self.state_dict(), model_path)
@@ -158,7 +159,7 @@ class Mlp(nn.Module):
         dump(lb, open('model/lb.pkl', 'wb'))
         dump(scaler, open('model/scaler.pkl', 'wb'))
 
-    def load_model(self, root=''):
+    def load_model(self):
         """
         load model and pre-processing tools needed for inference
         :return:
@@ -190,7 +191,7 @@ def build_mlp(
     :return:
     An instance of (a subclass of) nn.Module representing the network.
     """
-    # seequence of  affine operations: y = Wx + b followed by RelU activation.
+    # sequence of  affine operations: y = Wx + b followed by RelU activation.
     layer_list = [nn.Linear(input_size, hidden_size), nn.ReLU()]
 
     for layer in range(n_layers):
@@ -203,6 +204,19 @@ def build_mlp(
 
 
 class CensusDataset(Dataset):
+    """
+    Dataset for loading census data
+
+    Parameters
+    ----------
+    features: torch.Tensor
+        processed features
+    labels: torch.Tensor
+        labels (in {0, 1})
+    device: str
+        device used ('cuda' or 'cpu')
+    """
+
     def __init__(self, features: np.array, labels: np.array, device: str):
         self.features = torch.from_numpy(features).to(device).to(torch.float32)
         self.labels = torch.from_numpy(labels).to(device)
