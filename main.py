@@ -124,10 +124,10 @@ async def predict(predict_body: CensusItem):
         predicted = [1]
     logging.info(predicted)
     # Return predicted salary class
-    # output = Item(predicted_salary_class=predicted[0])
-    output = {
-        "predicted_salary_class": predicted[0]
-    }
+    output = Item(predicted_salary_class=predicted[0])
+    # output = {
+    #     "predicted_salary_class": predicted[0]
+    # }
     return output
 
 
