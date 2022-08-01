@@ -26,8 +26,8 @@ if "DYNO" in os.environ and os.path.isdir(".dvc"):
     # os.system("dvc remote add -d s3remote s3://censusbucketgg")
     pull_err = os.system("dvc pull")
     if pull_err != 0:
-        logger.warning(f"dvc pull failed, error: {pull_err}")
-        exit(f"dvc pull failed, error {pull_err}")
+        logger.warning(f" New dvc pull failed, error: {pull_err}")
+        # exit(f"dvc pull failed, error {pull_err}")
     else:
         logger.info("DVC Pull worked.")
     os.system("rm -r .dvc .apt/usr/lib/dvc")
@@ -120,13 +120,13 @@ async def predict(predict_body: CensusItem):
         logger.info(f'data processed shape: {x.shape}')
         predicted = inference(model, x)
     except:
-        predicted = [1]
+        predicted = [7]
     logging.info(predicted)
     # Return predicted salary class
-    # output = Item(predicted_salary_class=predicted[0])
-    output = {
-        "predicted_salary_class": predicted[0]
-    }
+    output = Item(predicted_salary_class=predicted[0])
+    # output = {
+    #     "predicted_salary_class": predicted[0]
+    # }
     return output
 
 
