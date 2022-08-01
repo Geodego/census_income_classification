@@ -21,8 +21,9 @@ data = {
     "hours-per-week": 40,
     "native-country": "Cuba"
 }
-#url = 'https://geof-census-app.herokuapp.com/'
-url = "http://127.0.0.1:8000/"
+url = 'https://geof-census-app.herokuapp.com/'
+# url = "http://127.0.0.1:8000/"
+# when run with uvicorn works fine
 response1 = requests.get(url)
 print(f"status get request: {response1.status_code}")
 print(response1.text)
