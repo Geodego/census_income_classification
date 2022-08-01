@@ -27,7 +27,7 @@ if "DYNO" in os.environ and os.path.isdir(".dvc"):
     pull_err = os.system("dvc pull")
     if pull_err != 0:
         # TODO: restore code here
-        logger.warning(f"dvc pull failed, error: {pull_err}")
+        logger.warning(f" last dvc pull failed, error: {pull_err}")
         #exit(f"dvc pull failed, error {pull_err}")
     else:
         logger.info("DVC Pull worked.")
