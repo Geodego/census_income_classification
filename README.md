@@ -54,23 +54,28 @@ This implement:
   - GET on the root giving a welcome message.
   - POST that does model inference.
 - Unit tests to test the API.
-- To launch the API use the following command (the `reload` flag allows to make changes to the code and have them 
+- To launch the API, we use the following command (the `reload` flag allows to make changes to the code and have them 
 instantly deployed without restarting uvicorn):
 ```bash
 > uvicorn main:app --reload
 ```
-- Once the API is deployed we can get its docs at the following url: [http//127.0.0.1:8000/docs](http//127.0.0.1:8000/docs)
+- Once the API is deployed we can get its docs at the following url: [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs)
 
 ## CI/CD
 ### CI
-- Setup GitHub Actions on the repository. We use the pre-made GitHub Actions python-package-conda.yml and adapt it to
+- We set-up GitHub Actions on the repository. We use the pre-made GitHub Actions python-package-conda.yml and adapt it to
 the version of python used: 3.8. This action runs pytest and flake8 on push and requires both to pass without error.
-- Add AWS credentials to the action (secrets need to be made available to the workflow by creating Repository Secret).
+- We add AWS credentials to the action (secrets need to be made available to the workflow by creating Repository Secret).
 Connect AWS to GitHub actions:
-  - Add your [AWS credentials to the Action](https://github.com/marketplace/actions/configure-aws-credentials-action-for-github-actions).
-  - Make your secrets available to your workflow by creating Repository Secrets: 
+  - We add our [AWS credentials to the Action](https://github.com/marketplace/actions/configure-aws-credentials-action-for-github-actions).
+  - We make secrets available to our workflow by creating Repository Secrets: 
   [Creating encrypted secrets for a repository](https://docs.github.com/en/actions/security-guides/encrypted-secrets#creating-encrypted-secrets-for-a-repository).
-- Set up [DVC in the action](https://github.com/iterative/setup-dvc) and specify a command to ```bash dvc pull```, you need to add in the action steps defined in the action YAML file
+- We set up [DVC in the action](https://github.com/iterative/setup-dvc) and specify a command to ```bash dvc pull```, 
+we need to add in the action steps defined in the action YAML file:
+```bash
+ - name: Download DVC artifacts
+   run: dvc pull
+```
 
 ### CD with Heroku
  We use Heroku to run our python application that consists in an API for machine learning inference.
