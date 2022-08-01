@@ -107,13 +107,15 @@ async def api_greeting():
     logger.warning("entering get request")
     return {"greeting": "Welcome! This API predicts income category using Census data."}
 
-
+pull_err = 0
 @app.post("/predict", response_model=Item)
 async def predict(predict_body: CensusItem):
     logger.warning("entering post request")
     if pull_err != 0:
+        logger.warning("entering if in post")
         predicted = [7]
         output = Item(predicted_salary_class=predicted[0])
+        logger.warning("output calculated in post")
         return output
     try:
         model = get_trained_mlp()
