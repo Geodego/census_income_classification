@@ -107,7 +107,7 @@ async def api_greeting():
     return {"greeting": "Welcome! This API predicts income category using Census data."}
 
 
-@app.post("/predict", response_model=Item)
+@app.post("/predict")
 async def predict(predict_body: CensusItem):
     try:
         model = get_trained_mlp()
@@ -121,7 +121,8 @@ async def predict(predict_body: CensusItem):
         logger.info(f'data processed shape: {x.shape}')
         predicted = inference(model, x)
     except:
-        predicted = [1]
+        print('error, return default prediction')
+        predicted = [7]
     logging.info(predicted)
     # Return predicted salary class
     output = Item(predicted_salary_class=predicted[0])
