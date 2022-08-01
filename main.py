@@ -21,9 +21,10 @@ logger = logging.getLogger()
 
 if "DYNO" in os.environ and os.path.isdir(".dvc"):
     # This code is necessary for Heroku to use dvc
-    logger.info("Running DVC")
+    logger.warning("Running DVC")
     os.system("dvc config core.no_scm true")
-    # os.system("dvc remote add -d s3remote s3://censusbucketgg")
+    os.system("dvc remote add -d s3remote s3://censusbucketgg")
+    logger.warning("Trying DVC pull")
     pull_err = os.system("dvc pull")
     if pull_err != 0:
         logger.warning(f" New dvc pull failed, error: {pull_err}")
@@ -103,11 +104,17 @@ app = FastAPI()
 # Define a GET on the root.
 @app.get("/")
 async def api_greeting():
+    logger.warning("entering get request")
     return {"greeting": "Welcome! This API predicts income category using Census data."}
 
 
 @app.post("/predict", response_model=Item)
 async def predict(predict_body: CensusItem):
+    logger.warning("entering post request")
+    if pull_err != 0:
+        predicted = [7]
+        output = Item(predicted_salary_class=predicted[0])
+        return output
     try:
         model = get_trained_mlp()
         data = pd.DataFrame([predict_body.dict(by_alias=True)])
