@@ -107,10 +107,9 @@ async def api_greeting():
     logger.warning("entering get request")
     return {"greeting": "Welcome! This API predicts income category using Census data."}
 
-pull_err = 0
 @app.post("/predict", response_model=Item)
 async def predict(predict_body: CensusItem):
-    logger.warning("entering post request")
+    logger.warning(f"entering post request, pull_err={pull_err}")
     if pull_err != 0:
         logger.warning("entering if in post")
         predicted = [7]
@@ -118,6 +117,7 @@ async def predict(predict_body: CensusItem):
         logger.warning("output calculated in post")
         return output
     try:
+        logger.warning('pricing with model')
         model = get_trained_mlp()
         data = pd.DataFrame([predict_body.dict(by_alias=True)])
         logger.info('Get data from body as a CensusItem object')
