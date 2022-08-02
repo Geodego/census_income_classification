@@ -19,6 +19,11 @@ import logging
 logging.basicConfig(level=logging.INFO, format="%(name)s - %(levelname)s - %(message)s")
 logger = logging.getLogger()
 
+
+logger.warning('App starting')
+logger.warning(f"DYNO in os.environ: {'DYNO' in os.environ}")
+logger.warning(f"dvc durectory: {os.path.isdir('.dvc')}")
+
 if "DYNO" in os.environ and os.path.isdir(".dvc"):
     # This code is necessary for Heroku to use dvc
     logger.warning("Running DVC")
