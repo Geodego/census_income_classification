@@ -23,6 +23,8 @@ logger.warning('App starting')
 logger.warning(f"DYNO in os.environ: {'DYNO' in os.environ}")
 logger.warning(f"dvc directory: {os.path.isdir('.dvc')}")
 
+
+pull_err = 0
 if "DYNO" in os.environ and os.path.isdir(".dvc"):
     # This code is necessary for Heroku to use dvc
     logger.warning("Running DVC")
