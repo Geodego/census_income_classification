@@ -111,14 +111,14 @@ app = FastAPI()
 # Define a GET on the root.
 @app.get("/")
 async def api_greeting():
-    logger.warning("entering get request")
-    logger.warning(f'error status of dvc pull: {pull_err}')
+    logger.info("entering get request")
+    logger.info(f'error status of dvc pull: {pull_err}')
     return {"greeting": "Welcome! This API predicts income category using Census data."}
 
 
 @app.post("/predict", response_model=Item)
 async def predict(predict_body: CensusItem):
-    logger.warning(f"entering post request, pull_err={pull_err}")
+    logger.info(f"entering post request, pull_err={pull_err}")
     if pull_err != 0:
         logger.warning("entering if pull_err in post")
         predicted = [7]
@@ -126,9 +126,9 @@ async def predict(predict_body: CensusItem):
         logger.warning("output calculated in post")
         return output
 
-    logger.warning('pricing with model')
+    logger.info('pricing with model')
     model = get_trained_mlp()
-    logger.warning("get the model")
+    logger.info("get the model")
     data = pd.DataFrame([predict_body.dict(by_alias=True)])
     logger.warning('Get data from body as a CensusItem object')
     logger.warning(data)

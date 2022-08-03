@@ -14,6 +14,10 @@ import numpy as np
 import pandas as pd
 from sklearn.preprocessing import LabelBinarizer, OneHotEncoder, StandardScaler
 from sklearn.model_selection import train_test_split
+import logging
+
+logging.basicConfig(level=logging.INFO, format="%(name)s - %(levelname)s - %(message)s")
+logger = logging.getLogger()
 
 
 def process_data(
@@ -159,6 +163,7 @@ def save_hyperparameters(params: dict, random_state):
 
 
 def get_hyperparameters():
+    logger.info('start get_hyperparameters')
     file_name = get_path_file('parameters/hyperparams.yml')
     with open(file_name, "r") as stream:
         params = yaml.safe_load(stream)

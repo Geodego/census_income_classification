@@ -57,6 +57,7 @@ class Mlp(nn.Module):
                  hyper_tuning: bool = False,
                  use_saved_hyper_params: bool = False
                  ):
+        logger.info('building MLP')
         super(Mlp, self).__init__()
         self.loss_fn = nn.CrossEntropyLoss()  # combines nn.LogSoftmax and nn.NLLLoss
         self.device = "cuda" if torch.cuda.is_available() else "cpu"
