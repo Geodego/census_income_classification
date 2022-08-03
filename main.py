@@ -19,9 +19,9 @@ import logging
 logging.basicConfig(level=logging.INFO, format="%(name)s - %(levelname)s - %(message)s")
 logger = logging.getLogger()
 
-logger.warning('App starting')
-logger.warning(f"DYNO in os.environ: {'DYNO' in os.environ}")
-logger.warning(f"dvc directory: {os.path.isdir('.dvc')}")
+logger.info('App starting')
+logger.info(f"DYNO in os.environ: {'DYNO' in os.environ}")
+logger.info(f"dvc directory: {os.path.isdir('.dvc')}")
 
 
 pull_err = None

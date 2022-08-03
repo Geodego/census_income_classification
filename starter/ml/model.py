@@ -12,6 +12,10 @@ from sklearn.model_selection import train_test_split
 from .nn_model import Mlp
 from .data import save_hyperparameters, get_hyperparameters
 from typing import Callable, Tuple
+import logging
+
+logging.basicConfig(level=logging.INFO, format="%(name)s - %(levelname)s - %(message)s")
+logger = logging.getLogger()
 
 
 def train_model(x_train: np.array, y_train: np.array, tuning: bool = True, random_state: int = 42,
@@ -167,6 +171,7 @@ def get_trained_mlp() -> Mlp:
     :return: Mlp model
 
     """
+    logger.info('Starting get_trained_mlp')
     model = Mlp(use_saved_hyper_params=True)
     model.load_model()
     return model
