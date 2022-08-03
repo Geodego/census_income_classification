@@ -111,6 +111,7 @@ app = FastAPI()
 @app.get("/")
 async def api_greeting():
     logger.warning("entering get request")
+    logger.warning(f'error status of dvc pull: {pull_err}')
     return {"greeting": "Welcome! This API predicts income category using Census data."}
 
 
