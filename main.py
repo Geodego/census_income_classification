@@ -24,19 +24,20 @@ logger.warning(f"DYNO in os.environ: {'DYNO' in os.environ}")
 logger.warning(f"dvc directory: {os.path.isdir('.dvc')}")
 
 
-pull_err = 0
+pull_err = None
 if "DYNO" in os.environ and os.path.isdir(".dvc"):
     # This code is necessary for Heroku to use dvc
     logger.warning("Running DVC")
     os.system("dvc config core.no_scm true")
-    os.system("dvc remote add -d s3remote s3://censusbucketgg")
+    # os.system("dvc remote add -d s3remote s3://censusbucketgg")
     logger.warning("Trying DVC pull")
     pull_err = os.system("dvc pull")
     if pull_err != 0:
         logger.warning(f" New dvc pull failed, error: {pull_err}")
-        # exit(f"dvc pull failed, error {pull_err}")
+        exit(f"dvc pull failed, error {pull_err}")
     else:
-        logger.info("DVC Pull worked.")
+        logger.warning("DVC Pull worked.")
+    logger.warning('removing dvc files')
     os.system("rm -r .dvc .apt/usr/lib/dvc")
 
 
@@ -119,26 +120,24 @@ async def api_greeting():
 async def predict(predict_body: CensusItem):
     logger.warning(f"entering post request, pull_err={pull_err}")
     if pull_err != 0:
-        logger.warning("entering if in post")
+        logger.warning("entering if pull_err in post")
         predicted = [7]
         output = Item(predicted_salary_class=predicted[0])
         logger.warning("output calculated in post")
         return output
-    try:
-        logger.warning('pricing with model')
-        model = get_trained_mlp()
-        data = pd.DataFrame([predict_body.dict(by_alias=True)])
-        logger.info('Get data from body as a CensusItem object')
-        logger.info(data)
-        # todo: get_cat_features need to be modified
-        cat_features = get_cat_features(for_api=False)
-        x, _, _, _, _ = process_data(data, categorical_features=cat_features,
-                                     training=False, encoder=model.encoder, lb=model.lb, scaler=model.scaler)
-        logger.info(f'data processed shape: {x.shape}')
-        predicted = inference(model, x)
-    except:
-        predicted = [7]
-    logging.info(predicted)
+
+    logger.warning('pricing with model')
+    model = get_trained_mlp()
+    data = pd.DataFrame([predict_body.dict(by_alias=True)])
+    logger.info('Get data from body as a CensusItem object')
+    logger.info(data)
+    # todo: get_cat_features need to be modified
+    cat_features = get_cat_features(for_api=False)
+    x, _, _, _, _ = process_data(data, categorical_features=cat_features,
+                                 training=False, encoder=model.encoder, lb=model.lb, scaler=model.scaler)
+    logger.info(f'data processed shape: {x.shape}')
+    predicted = inference(model, x)
+
     # Return predicted salary class
     output = Item(predicted_salary_class=predicted[0])
     # output = {
