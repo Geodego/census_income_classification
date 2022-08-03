@@ -128,9 +128,10 @@ async def predict(predict_body: CensusItem):
 
     logger.warning('pricing with model')
     model = get_trained_mlp()
+    logger.warning("get the model")
     data = pd.DataFrame([predict_body.dict(by_alias=True)])
-    logger.info('Get data from body as a CensusItem object')
-    logger.info(data)
+    logger.warning('Get data from body as a CensusItem object')
+    logger.warning(data)
     # todo: get_cat_features need to be modified
     cat_features = get_cat_features(for_api=False)
     x, _, _, _, _ = process_data(data, categorical_features=cat_features,
