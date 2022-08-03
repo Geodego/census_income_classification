@@ -12,6 +12,10 @@ from torch.utils.data import Dataset, DataLoader
 from sklearn.preprocessing import OneHotEncoder, LabelBinarizer, StandardScaler
 from pickle import dump, load
 from .data import get_path_file, get_hyperparameters
+import logging
+
+logging.basicConfig(level=logging.INFO, format="%(name)s - %(levelname)s - %(message)s")
+logger = logging.getLogger()
 
 
 class Mlp(nn.Module):
@@ -164,6 +168,7 @@ class Mlp(nn.Module):
         load model and pre-processing tools needed for inference
         :return:
         """
+        logger.warning("load model")
         model_path = get_path_file('model/mlp.pt')
         self.load_state_dict(torch.load(model_path))
         # get the paths to the relevant files
