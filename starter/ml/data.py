@@ -98,7 +98,7 @@ def process_data(
 def get_path_root() -> pathlib.PosixPath:
     """
     :return:
-    absolut path to project directory "census_income_classification"
+    absolut path to project directory "census_income_classification" or "app" when deployed on Heroku
     """
     logger.info('get_path_root')
     current_path = Path(os.path.realpath(__file__)).resolve()
