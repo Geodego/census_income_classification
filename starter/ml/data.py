@@ -165,10 +165,15 @@ def save_hyperparameters(params: dict, random_state):
 
 
 def get_hyperparameters():
-    logger.info('start get_hyperparameters')
+    logger.debug('start get_hyperparameters')
     file_name = get_path_file('parameters/hyperparams.yml')
     with open(file_name, "r") as stream:
-        params = yaml.safe_load(stream)
+        try:
+            params = yaml.safe_load(stream)
+        except BaseException as err:
+            print(f"Unexpected {err=}, {type(err)=}")
+            raise
+    logger.debug('Params loaded')
     return params
 
 
