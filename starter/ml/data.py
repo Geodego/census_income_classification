@@ -104,10 +104,11 @@ def get_path_root() -> pathlib.PosixPath:
     current_path = Path(os.path.realpath(__file__)).resolve()
     path = current_path
     logger.info(f'path: {path}')
-    # When deployed as an app the project directory is the top directory '/'
-    while path.name != 'census_income_classification' and path.name != '':
+    # When deployed as an app in Heroku the project directory is 'app'
+    while path.name != 'census_income_classification' or path.name != 'app':
         path = path.parent
         logger.info(f'parent path: {path}')
+
     logger.info(f'final path: {path}')
     return path
 
