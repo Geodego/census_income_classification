@@ -19,25 +19,17 @@ import logging
 logging.basicConfig(level=logging.INFO, format="%(name)s - %(levelname)s - %(message)s")
 logger = logging.getLogger()
 
-logger.info('App starting')
-logger.info(f"DYNO in os.environ: {'DYNO' in os.environ}")
-logger.info(f"dvc directory: {os.path.isdir('.dvc')}")
 
-
-pull_err = None
 if "DYNO" in os.environ and os.path.isdir(".dvc"):
     # This code is necessary for Heroku to use dvc
-    logger.warning("Running DVC")
+    logger.info("Running DVC")
     os.system("dvc config core.no_scm true")
-    # os.system("dvc remote add -d s3remote s3://censusbucketgg")
-    logger.warning("Trying DVC pull")
     pull_err = os.system("dvc pull")
     if pull_err != 0:
-        logger.warning(f" New dvc pull failed, error: {pull_err}")
         exit(f"dvc pull failed, error {pull_err}")
     else:
-        logger.warning("DVC Pull worked.")
-    logger.warning('removing dvc files')
+        logger.info("DVC Pull worked.")
+    logger.info('removing dvc files')
     os.system("rm -r .dvc .apt/usr/lib/dvc")
 
 
@@ -111,28 +103,18 @@ app = FastAPI()
 # Define a GET on the root.
 @app.get("/")
 async def api_greeting():
-    logger.info("entering get request")
-    logger.info(f'error status of dvc pull: {pull_err}')
+    logger.info("starting GET request")
     return {"greeting": "Welcome! This API predicts income category using Census data."}
 
 
 @app.post("/predict", response_model=Item)
 async def predict(predict_body: CensusItem):
-    logger.info(f"entering post request, pull_err={pull_err}")
-    if pull_err != 0:
-        logger.warning("entering if pull_err in post")
-        predicted = [7]
-        output = Item(predicted_salary_class=predicted[0])
-        logger.warning("output calculated in post")
-        return output
-
-    logger.info('pricing with model')
+    logger.info("starting POST request")
     model = get_trained_mlp()
     logger.info("get the model")
     data = pd.DataFrame([predict_body.dict(by_alias=True)])
-    logger.warning('Get data from body as a CensusItem object')
-    logger.warning(data)
-    # todo: get_cat_features need to be modified
+    logger.info('get data from body as a CensusItem object')
+
     cat_features = get_cat_features(for_api=False)
     x, _, _, _, _ = process_data(data, categorical_features=cat_features,
                                  training=False, encoder=model.encoder, lb=model.lb, scaler=model.scaler)
@@ -141,15 +123,6 @@ async def predict(predict_body: CensusItem):
 
     # Return predicted salary class
     output = Item(predicted_salary_class=predicted[0])
-    # output = {
-    #     "predicted_salary_class": predicted[0]
-    # }
+
     return output
 
-
-if __name__ == '__main__':
-    # save_education_slices()
-    # model_evaluation()
-    # train_and_save_model(tuning=False, use_saved_model=True)
-    a = CensusItem()
-    save_education_slices()

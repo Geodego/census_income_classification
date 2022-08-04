@@ -103,13 +103,17 @@ def get_path_root() -> pathlib.PosixPath:
     logger.info('get_path_root')
     current_path = Path(os.path.realpath(__file__)).resolve()
     path = current_path
-    logger.info(f'path: {path}')
+
     # When deployed as an app in Heroku the project directory is 'app'
-    while path.name != 'census_income_classification' and path.name != 'app' and path.name != '':
+    counter = 0
+    while path.name != 'census_income_classification' and path.name != 'app':
         path = path.parent
         logger.info(f'parent path: {path}')
+        counter += 1
+        if counter > 100:
+            raise Exception('Cannot find project path')
 
-    logger.info(f'final path: {path}')
+    logger.info(f'project directory path: {path}')
     return path
 
 
@@ -118,10 +122,8 @@ def get_path_file(file_local_path):
     Return the full path of a file given its local path
     :param file_local_path: local path of the file in the project (ex: "data/census.csv")
     """
-    logger.info('start get_path_file')
     project_dir = get_path_root()
     raw_path = PurePath.joinpath(project_dir, file_local_path)
-    logger.info(f'file path:\n {raw_path}')
     return raw_path
 
 
@@ -171,16 +173,10 @@ def save_hyperparameters(params: dict, random_state):
 
 
 def get_hyperparameters():
-    logger.info('start get_hyperparameters')
     file_name = get_path_file('parameters/hyperparams.yml')
     with open(file_name, "r") as stream:
-        try:
-            params = yaml.safe_load(stream)
-        except BaseException as err:
-            logger.warning(f'cannot load file: {err}')
-            logger.error(f"Unexpected {err=}, {type(err)=}")
-            raise
-    logger.debug('Params loaded')
+        params = yaml.safe_load(stream)
+
     return params
 
 

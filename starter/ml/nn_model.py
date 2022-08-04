@@ -169,7 +169,6 @@ class Mlp(nn.Module):
         load model and pre-processing tools needed for inference
         :return:
         """
-        logger.warning("load model")
         model_path = get_path_file('model/mlp.pt')
         self.load_state_dict(torch.load(model_path))
         # get the paths to the relevant files
