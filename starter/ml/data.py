@@ -171,7 +171,8 @@ def get_hyperparameters():
         try:
             params = yaml.safe_load(stream)
         except BaseException as err:
-            print(f"Unexpected {err=}, {type(err)=}")
+            logger.warning(f'cannot load file: {err}')
+            logger.error(f"Unexpected {err=}, {type(err)=}")
             raise
     logger.debug('Params loaded')
     return params
