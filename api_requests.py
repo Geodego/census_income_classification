@@ -1,5 +1,8 @@
+"""
+Test if the API GET and POST requests work properly.
+"""
+
 import requests
-import json
 import logging
 
 logging.basicConfig(level=logging.INFO, format="%(name)s - %(levelname)s - %(message)s")
@@ -23,14 +26,18 @@ data = {
 }
 url = 'https://geof-census-app.herokuapp.com/'
 # url = "http://127.0.0.1:8000/"
+# when run with uvicorn works fine
 response1 = requests.get(url)
 print(f"status get request: {response1.status_code}")
+print(response1.text)
 
-# url='https://geof-census-app.herokuapp.com/predict'
 url = url + "predict"
 r = requests.post(
     url=url,
     json=data,
 )
-print(f"status post request: {r.status_code}")
-print(r.json())
+status = r.status_code
+print(f"status post request: {status}")
+
+if status == 200:
+    print(r.json())
