@@ -112,8 +112,10 @@ def get_path_file(file_local_path):
     Return the full path of a file given its local path
     :param file_local_path: local path of the file in the project (ex: "data/census.csv")
     """
+    logger.debug('start get_path_file')
     project_dir = get_path_root()
     raw_path = PurePath.joinpath(project_dir, file_local_path)
+    logger.debug(f'file path:\n {raw_path}')
     return raw_path
 
 
