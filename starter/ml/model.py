@@ -1,5 +1,5 @@
 """
-Model training and performance evaluation functions. Include also methods for hyperparameters search.
+Model training and performance evaluation functions. Include also methods for hyper-parameters search.
 
 author: Geoffroy de Gournay
 date: April 27, 2022

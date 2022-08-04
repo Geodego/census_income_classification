@@ -100,7 +100,7 @@ def get_path_root() -> pathlib.PosixPath:
     :return:
     absolut path to project directory "census_income_classification" or "app" when deployed on Heroku
     """
-    logger.info('get_path_root')
+    logger.debug('get_path_root')
     current_path = Path(os.path.realpath(__file__)).resolve()
     path = current_path
 
@@ -108,12 +108,11 @@ def get_path_root() -> pathlib.PosixPath:
     counter = 0
     while path.name != 'census_income_classification' and path.name != 'app':
         path = path.parent
-        logger.info(f'parent path: {path}')
         counter += 1
         if counter > 100:
             raise Exception('Cannot find project path')
 
-    logger.info(f'project directory path: {path}')
+    logger.debug(f'project directory path: {path}')
     return path
 
 

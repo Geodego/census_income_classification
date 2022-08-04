@@ -83,6 +83,9 @@ class Item(BaseModel):
 
 
 def save_education_slices():
+    """
+    Compute the performance of the model on slices of the data using the categorical feature education.
+    """
     model = get_trained_mlp()
     selected_feature = "education"
     print(model_metrics(model))
@@ -125,4 +128,8 @@ async def predict(predict_body: CensusItem):
     output = Item(predicted_salary_class=predicted[0])
 
     return output
+
+
+if __name__ == '__main__':
+    model_evaluation()
 
