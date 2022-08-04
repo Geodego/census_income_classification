@@ -104,7 +104,7 @@ def get_path_root() -> pathlib.PosixPath:
     current_path = Path(os.path.realpath(__file__)).resolve()
     path = current_path
     logger.info(f'path: {path}')
-    while path.name != 'census_income_classification':
+    while path.name != 'census_income_classification' or path.name:
         path = path.parent
         logger.info(f'parent path: {path}')
     logger.info(f'final path: {path}')
