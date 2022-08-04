@@ -104,7 +104,8 @@ def get_path_root() -> pathlib.PosixPath:
     current_path = Path(os.path.realpath(__file__)).resolve()
     path = current_path
     logger.info(f'path: {path}')
-    while path.name != 'census_income_classification' or path.name:
+    # When deployed as an app the project directory is the top directory '/'
+    while path.name != 'census_income_classification' and path.name != '':
         path = path.parent
         logger.info(f'parent path: {path}')
     logger.info(f'final path: {path}')
@@ -238,4 +239,5 @@ def get_data_slices(selected_feature: str, encoder: OneHotEncoder, lb: LabelBina
 
 
 if __name__ == '__main__':
+    a = get_path_file('data')
     get_data_slices('education')
