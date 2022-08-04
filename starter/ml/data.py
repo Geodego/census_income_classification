@@ -105,7 +105,7 @@ def get_path_root() -> pathlib.PosixPath:
     path = current_path
     logger.info(f'path: {path}')
     # When deployed as an app in Heroku the project directory is 'app'
-    while path.name != 'census_income_classification' or path.name != 'app':
+    while path.name != 'census_income_classification' or path.name != 'app' or path.name != '':
         path = path.parent
         logger.info(f'parent path: {path}')
 
