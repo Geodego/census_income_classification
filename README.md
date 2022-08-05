@@ -80,7 +80,9 @@ The full instructions can be found [here](https://docs.aws.amazon.com/IAM/latest
 > git push
 ```
 - The files tracked by DVC can be found using ```dvc dag```:
-![](screenshots/dvcdag.png)
+
+<img src="screenshots/dvcdag.png" width="250" height="250">
+
 ## API Creation
 
 - We create a RESTful API using FastAPI, using type hinting and a Pydantic model to ingest the body from POST. 
