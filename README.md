@@ -54,7 +54,7 @@ The model trained use the following hyper-parameters:
   - F1: 0.68
 - We also measure performance on slices of the data using the categorical feature 'education':
 
-![](screenshots/slice_output.png)
+<img src="screenshots/slice_output.png" width="275" height="275">
 
 ## Code organisation
 - data used for training are found in **/data**
