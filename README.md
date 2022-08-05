@@ -14,7 +14,9 @@ The purpose of this project is to deploy a scalable pipeline as would be done in
 purpose we build an API using FastAPI and deploy it using Heroku. The API run machine learning inference, a prediction 
 on the Census Income Data Set. Data and models are saved on AWS s3 and we use DVC to track them.
 
-We use a multilayer perceptron (MLP) with Dropout for the task. The model is implemented using pytorch.
+We use a multilayer perceptron (MLP) with Dropout for the task. The model is implemented using pytorch. We use the 
+pytorch version restricted to CPU in order to reduce the size of our slug (app and its dependencies). The limit of the 
+slug on Heroku is of 500MB.
 
 In the process of building this model and API we:
 - check performance on slices
